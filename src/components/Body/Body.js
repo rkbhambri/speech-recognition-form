@@ -6,7 +6,7 @@ const Controls = (props) => {
     const browserSpecificRecognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
     let [message, setMessage] = useState(new SpeechSynthesisUtterance());
     const [recognition] = useState(browserSpecificRecognition);
-    const [question, setQuestion] = useState('whats your firstname')
+    const [question, setQuestion] = useState('whats your firstname');
     const [disableStart, setDisableStart] = useState(false);
     const [disablePause, setDisablePause] = useState(false);
     // const [error, setError] = useState(null);
@@ -28,8 +28,9 @@ const Controls = (props) => {
     }, [flag, message, question]);
 
     const startRecognition1 = () => {
+        console.log('startRecognition1')
         setFlag(true);
-    }
+    };
 
     const startRecognition = (event) => {
         event && event.preventDefault();
@@ -100,12 +101,14 @@ const Controls = (props) => {
             else if (event.results[i - 1] !== undefined && transcript.includes('reset')) {
                 resetFormFields();
                 setFlag(false);
+                setQuestion('whats your firstname');
             }
             // Check if user say 'Submit Form' then submit response and show thanks message
             else if (event.results[i - 1] !== undefined && transcript.includes('submit')) {
                 resetFormFields();
                 setSubmitFlag(true);
                 setFlag(false);
+                setQuestion('whats your firstname');
                 setTimeout(() => {
                     setSubmitFlag(false);
                 }, 8000);
