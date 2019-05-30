@@ -1,7 +1,7 @@
 {
-  "name": "speech-form",
+  "name": "speech-recognition-form",
   "version": "0.1.0",
-  "homepage": "https://rkbhambri.github.io/speech-form/",
+  "homepage": "https://rkbhambri.github.io/speech-recognition-form/",
   "private": true,
   "dependencies": {
     "bootstrap": "^4.3.1",
