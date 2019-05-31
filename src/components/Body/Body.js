@@ -5,6 +5,7 @@ import { isNameValid, isEmailValid } from '../../Helpers/Body';
 
 const Controls = (props) => {
     const browserSpecificRecognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
+    const voices = speechSynthesis.getVoices();
     let [message, setMessage] = useState(new SpeechSynthesisUtterance());
     const [recognition] = useState(browserSpecificRecognition);
     const [question, setQuestion] = useState('whats your firstname');
@@ -23,6 +24,7 @@ const Controls = (props) => {
         if (flag) {
             message.text = question;
             message.volume = 1;
+            message.voice = voices[54];
             startRecognition();
             speechSynthesis.speak(message);
         }
@@ -54,6 +56,8 @@ const Controls = (props) => {
 
     const fallbackResponse = (question) => {
         message.text = question;
+        message.volume = 1;
+        message.voice = voices[54];
         speechSynthesis.speak(message);
         startVoiceRecognition();
     }
