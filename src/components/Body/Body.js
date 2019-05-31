@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import VoiceIcon from './VoiceIcon/VoiceIcon';
 import Form from './Form/Form';
+import { isNameValid, isEmailValid } from '../../Helpers/Body';
 
 const Controls = (props) => {
     const browserSpecificRecognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
@@ -44,6 +45,19 @@ const Controls = (props) => {
         }
     };
 
+    const setCommonState = (question) => {
+        message.text = question;
+        setQuestion(question);
+        setMessage(message);
+        setFlag(true);
+    };
+
+    const fallbackResponse = (question) => {
+        message.text = question;
+        speechSynthesis.speak(message);
+        startVoiceRecognition();
+    }
+
     const resetFormFields = () => {
         setFirstName('');
         setLastName('');
@@ -56,51 +70,15 @@ const Controls = (props) => {
     recognition.onresult = (event) => {
         const resultsLength = event.results.length;
         for (let i = event.resultIndex; i < resultsLength; i++) {
-            const transcript = event.results[i][0].transcript.trim();
+            let transcript = event.results[i][0].transcript.trim();
             speechText = speechText ? speechText.concat(transcript) : transcript;
             setSpeechText(speechText);
 
             // Check if user said 'stop'/'pause' then stop recording voice
             if (transcript === 'pause' || transcript === 'stop') {
-                resetFormFields();
                 recognition.stop();
                 setFlag(false);
                 disableStart && setDisableStart(false);
-            }
-            // Check if user speaks firstname then set firstname
-            else if (message.text.includes('firstname')) {
-                setFirstName(transcript);
-                message.text = 'whats your lastname';
-                setQuestion('whats your lastname');
-                setMessage(message);
-                setFlag(true);
-                // speechSynthesis.pause();
-            }
-            // Check if user speaks lastname then set lastname
-            else if (message.text.includes('lastname')) {
-                setLastName(transcript);
-                message.text = 'whats your email';
-                setQuestion('whats your email');
-                setMessage(message);
-                setFlag(true);
-                // speechSynthesis.pause();
-            }
-            // Check if user speaks email then set email
-            else if (message.text.includes('email')) {
-                setEmail(transcript.replace(/ +/g, "").toLowerCase());
-                message.text = 'whats your contact';
-                setQuestion('whats your contact');
-                setMessage(message);
-                setFlag(true);
-                // speechSynthesis.pause();
-            }
-            // Check if user say 'contact' then set contact number
-            else if (message.text.includes('contact')) {
-                isNaN(Number(transcript.replace(/ +/g, ""))) ? alert('Please enter valid number') : setContact(Number(transcript.replace(/ +/g, "")));
-                message.text = 'Do you want to submit or reset';
-                setQuestion('Do you want to submit or reset');
-                setMessage(message);
-                setFlag(true);
             }
             // Check if user say 'Reset' then reset input details
             else if (event.results[i - 1] !== undefined && transcript.includes('reset')) {
@@ -118,7 +96,43 @@ const Controls = (props) => {
                     setSubmitFlag(false);
                 }, 8000);
             }
-
+            // Check if user speaks firstname then set firstname
+            else if (message.text.includes('firstname')) {
+                if (isNameValid(transcript)) {
+                    setFirstName(transcript);
+                    setCommonState('whats your lastname');
+                } else {
+                    fallbackResponse('Please enter valid firstname');
+                }
+            }
+            // Check if user speaks lastname then set lastname
+            else if (message.text.includes('lastname')) {
+                if (isNameValid(transcript)) {
+                    setLastName(transcript);
+                    setCommonState('whats your email');
+                } else {
+                    fallbackResponse('Please enter valid lastname');
+                }
+            }
+            // Check if user speaks email then set email
+            else if (message.text.includes('email')) {
+                transcript = transcript.replace(/ +/g, "").toLowerCase();
+                if (isEmailValid(transcript)) {
+                    setEmail(transcript);
+                    setCommonState('whats your contact');
+                } else {
+                    fallbackResponse('Please enter valid email');
+                }
+            }
+            // Check if user say 'contact' then set contact number
+            else if (message.text.includes('contact')) {
+                if (!isNaN(Number(transcript.replace(/ +/g, "")))) {
+                    setContact(Number(transcript.replace(/ +/g, "")));
+                    setCommonState('Do you want to submit or reset');
+                } else {
+                    fallbackResponse('Please enter valid contact');
+                }
+            }
         }
     };
 
