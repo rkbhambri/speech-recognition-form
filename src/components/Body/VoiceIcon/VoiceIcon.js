@@ -12,7 +12,7 @@ const VoiceIcon = (props) => {
                         src={GoogleVoiceIcon}
                         alt="Not available"
                         style={{ width: '30px', height: '20px' }}
-                        onClick={(event) => props.startRecognition(event)} />
+                        onClick={(event) => props.startVoiceRecognition(event)} />
                     {/* Enable loader when recognition starts */}
                     {
                         props.disableStart &&

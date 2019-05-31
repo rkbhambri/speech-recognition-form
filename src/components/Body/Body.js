@@ -27,9 +27,10 @@ const Controls = (props) => {
         }
     }, [flag, message, question]);
 
-    const startRecognition1 = () => {
-        console.log('startRecognition1')
-        setFlag(true);
+    const startVoiceRecognition = () => {
+        if (!disableStart && !isSubmit) {
+            setFlag(true);
+        }
     };
 
     const startRecognition = (event) => {
@@ -42,10 +43,6 @@ const Controls = (props) => {
             recognition.start();
         }
     };
-
-    // const validateSpeech = (transcript) => {
-    //     return transcript === 'first name' || transcript === 'last name' || transcript === 'email' || transcript === 'contact';
-    // };
 
     const resetFormFields = () => {
         setFirstName('');
@@ -62,8 +59,16 @@ const Controls = (props) => {
             const transcript = event.results[i][0].transcript.trim();
             speechText = speechText ? speechText.concat(transcript) : transcript;
             setSpeechText(speechText);
+
+            // Check if user said 'stop'/'pause' then stop recording voice
+            if (transcript === 'pause' || transcript === 'stop') {
+                resetFormFields();
+                recognition.stop();
+                setFlag(false);
+                disableStart && setDisableStart(false);
+            }
             // Check if user speaks firstname then set firstname
-            if (message.text.includes('firstname')) {
+            else if (message.text.includes('firstname')) {
                 setFirstName(transcript);
                 message.text = 'whats your lastname';
                 setQuestion('whats your lastname');
@@ -113,13 +118,7 @@ const Controls = (props) => {
                     setSubmitFlag(false);
                 }, 8000);
             }
-            // Check if user said 'stop'/'pause' then stop recording voice
-            else if (transcript === 'pause' || transcript === 'stop') {
-                resetFormFields();
-                recognition.stop();
-                setFlag(false);
-                disableStart && setDisableStart(false);
-            }
+
         }
     };
 
@@ -138,7 +137,7 @@ const Controls = (props) => {
     return (
         <div className="controls w-100 mt-4">
             <VoiceIcon
-                startRecognition={(event) => startRecognition1(event)}
+                startVoiceRecognition={(event) => startVoiceRecognition(event)}
                 pauseRecognition={(event) => pauseRecognition(event)}
                 disableStart={disableStart}
                 speechText={speechText} />

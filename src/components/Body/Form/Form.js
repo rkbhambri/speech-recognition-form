@@ -6,25 +6,25 @@ const Form = (props) => {
             <input
                 type="text"
                 name="firstname"
-                placeholder="Say Firstname"
+                placeholder="Firstname"
                 defaultValue={props.firstName}
                 className="form-control mt-3" />
             <input
                 type="text"
                 name="lastname"
-                placeholder="Say Lastname"
+                placeholder="Lastname"
                 defaultValue={props.lastName}
                 className="form-control mt-3" />
             <input
                 type="email"
                 name="email"
-                placeholder="Say Email"
+                placeholder="Email"
                 defaultValue={props.email}
                 className="form-control mt-3" />
             <input
                 type="number"
                 name="mobile"
-                placeholder="Say Contact"
+                placeholder="Contact"
                 defaultValue={props.contact}
                 className="form-control mt-3" />
             <div className="controls mt-4">
